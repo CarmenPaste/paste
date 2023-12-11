@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Factura</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+
+        #crud-form {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #data-table {
+            margin-top: 20px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #data-table th, #data-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        #data-table th {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        .delete-button {
+            background-color: #f44336;
+        }
+
+        .delete-button:hover {
+            background-color: #da190b;
+        }
+
+        .update-button {
+            background-color: #2196f3;
+        }
+
+        .update-button:hover {
+            background-color: #0b7dda;
+        }
+    </style>
+</head>
+<body>
+    <form id="crud-form">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre">
+        <label for="apellido">Apellido:</label>
+        <input type="text" id="apellido">
+        <label for="correo">Correo:</label>
+        <input type="email" id="correo">
+        <label for="direccion">Dirección:</label>
+        <input type="text" id="direccion">
+        <label for="telefono">Teléfono:</label>
+        <input type="number" id="telefono">
+        <label for="valortotal">Valor Total:</label>
+        <input type="number" id="valor_total">
+        <button type="button" onclick="crearFactura()">Crear</button>
+    </form>
+
+    <table id="data-table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Correo</th>
+                <th>Dirección</th>
+                <th>Teléfono</th>
+                <th>Valor Total</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="table-body">
+            <!-- Aquí se mostrarán los datos -->
+        </tbody>
+    </table>
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+        import { getDatabase, ref, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCx0MvB1v4EtXeknhWyXxn-LYXv0JVpWxA",
+            authDomain: "restaurante-13295.firebaseapp.com",
+            databaseURL: "https://restaurante-13295-default-rtdb.firebaseio.com",
+            projectId: "restaurante-13295",
+            storageBucket: "restaurante-13295.appspot.com",
+            messagingSenderId: "965922153113",
+            appId: "1:965922153113:web:20dd5b4ea16ec149018e08"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const tableBody = document.getElementById('table-body');
+
+        window.crearFactura = function () {
+            const nombre = document.getElementById("nombre").value;
+            const apellido = document.getElementById("apellido").value;
+            const correo = document.getElementById("correo").value;
+            const direccion = document.getElementById("direccion").value;
+            const telefono = document.getElementById("telefono").value;
+            const valor_total = document.getElementById("valor_total").value;
+
+            push(
+                ref(database, 'Paste'),
+                {
+                    nombre: nombre,
+                    apellido: apellido,
+                    correo: correo,
+                    direccion: direccion,
+                    telefono: telefono,
+                    valor_total: valor_total
+                }
+            );
+        }
+
+        // Actualizar la tabla cuando se añade un nuevo dato
+        onValue(ref(database, 'Paste'), (snapshot) => {
+            const data = snapshot.val();
+            renderTable(data);
+        });
+
+        function renderTable(data) {
+            // Limpiar la tabla
+            tableBody.innerHTML = '';
+
+            // Renderizar los datos en la tabla
+            for (const key in data) {
+                if (data.hasOwnProperty(key)) {
+                    const row = data[key];
+                    const newRow = document.createElement('tr');
+                    newRow.innerHTML = `
+                        <td>${row.nombre}</td>
+                        <td>${row.apellido}</td>
+                        <td>${row.correo}</td>
+                        <td>${row.direccion}</td>
+                        <td>${row.telefono}</td>
+                        <td>${row.valor_total}</td>
+                        <td>
+                            <button class="delete-button" onclick="eliminarFactura('${key}')">Eliminar</button>
+                            <button class="update-button" onclick="actualizarFactura('${key}')">Actualizar</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(newRow);
+                }
+            }
+        }
+
+        // Función para eliminar un dato
+        window.eliminarFactura = function (key) {
+            if (confirm('¿Estás seguro de que quieres eliminar este registro?')) {
+                remove(ref(database, `Paste/${key}`));
+            }
+        }
+
+        // Función para actualizar un dato
+        window.actualizarFactura = function (key) {
+            const nombre = prompt('Ingrese el nuevo nombre:');
+            const apellido = prompt('Ingrese el nuevo apellido:');
+            const correo = prompt('Ingrese el nuevo correo:');
+            const direccion = prompt('Ingrese la nueva dirección:');
+            const telefono = prompt('Ingrese el nuevo teléfono:');
+            const valor_total = prompt('Ingrese el nuevo valor total:');
+
+            update(ref(database, `Paste/${key}`), {
+                nombre: nombre,
+                apellido: apellido,
+                correo: correo,
+                direccion: direccion,
+                telefono: telefono,
+                valor_total: valor_total
+            });
+        }
+    </script>
+</body>
+</html>
