@@ -10,7 +10,7 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background: url('https://i.pinimg.com/originals/8c/30/13/8c3013b5f4339339407de4165941d1c8.jpg') center/cover no-repeat;
+            background: url('https://previews.123rf.com/images/goodstudio/goodstudio1912/goodstudio191200245/135815314-ilustraci%C3%B3n-de-vector-plano-interior-de-supermercado-tienda-de-abarrotes-estanter%C3%ADas-con-productos.jpg') center/cover no-repeat;
             background-size: cover;
             height: 100vh;
             display: flex;
@@ -85,9 +85,17 @@
         .update-button:hover {
             background-color: #0b7dda;
         }
+
+        #logo {
+            max-width: 100px;
+            height: auto;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
+    <img id="logo" src="https://previews.123rf.com/images/goodstudio/goodstudio1912/goodstudio191200245/135815314-ilustraci%C3%B3n-de-vector-plano-interior-de-supermercado-tienda-de-abarrotes-estanter%C3%ADas-con-productos.jpg" alt="Logo Minimarket">
+
     <form id="crud-form">
         <label for="nombre">Nombre:</label>
         <input type="text" id="nombre">
@@ -126,7 +134,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
         import { getDatabase, ref, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
 
-        // Your web app's Firebase configuration
+        // Tu configuración de Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyCx0MvB1v4EtXeknhWyXxn-LYXv0JVpWxA",
             authDomain: "restaurante-13295.firebaseapp.com",
@@ -137,7 +145,7 @@
             appId: "1:965922153113:web:20dd5b4ea16ec149018e08"
         };
 
-        // Initialize Firebase
+        // Inicializar Firebase
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
         const tableBody = document.getElementById('table-body');
